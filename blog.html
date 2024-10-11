@@ -1,0 +1,148 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+      const postsContainer = document.getElementById("posts-container");
+
+      // Function to add a new post to the page
+      function addPost(post) {
+        var postcont = document.getElementById("posts-container");
+        const postElement = document.createElement("div");
+        postElement.classList.add("post");
+        postElement.innerHTML = `
+        <h3>${post.title}</h3>
+        <p>${post.content}</p>
+      `;
+        postcont.appendChild(postElement);
+      }
+
+      // Listen for new posts from the server
+      socket.on("new-post", (titles, contents) => {
+        var post = { title: titles, content: contents };
+        addPost(post);
+        console.log("recieved post");
+      });
+
+      // Submit a new post
+      const postForm = document.getElementById("post-form");
+
+      function kys() {
+        event.preventDefault();
+        var title = document.getElementById("post-title").value;
+        var content = document.getElementById("post-content").value;
+        socket.emit("new-post", title, content);
+        console.log(title, " ", content);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="posts-container"></div>
+
+    <h2>Create a New Post</h2>
+    <form id="post-form" onsubmit="kys()">
+      <label for="post-title">Title:</label>
+      <input type="text" id="post-title" name="post-title" required />
+
+      <label for="post-content">Content:</label>
+      <textarea id="post-content" name="post-content" required></textarea>
+      
+
+      <button type="submit">Submit Post</button>
+    </form>
+    
+    <div id="login-popup" class="popup">
+      <div class="popup-content">
+        <span class="close" onclick="closePopup('login-popup')">&times;</span>
+        <h2>Login</h2>
+        <form id="login-form">
+          <label for="username">Username:</label>
+          <input type="text" id="username" name="username" required />
+
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password" required />
+
+          <button type="submit">Login</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="signup-popup" class="popup">
+      <div class="popup-content">
+        <span class="close" onclick="closePopup('signup-popup')">&times;</span>
+        <h2>Signup</h2>
+        <form id="signup-form">
+          <label for="signup-username">Username:</label>
+          <input type="text" id="signup-username" name="signup-username" required />
+
+          <label for="signup-password">Password:</label>
+          <input type="password" id="signup-password" name="signup-password" required />
+
+          <button type="submit">Signup</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // ... existing javascript code ...
+      
+      function openPopup(popupId) {
+        document.getElementById(popupId).style.display = "block";
+      }
+
+      function closePopup(popupId) {
+        document.getElementById(popupId).style.display = "none";
+      }
+
+      // ... existing javascript code ...
+
+      // Handle login form submission
+      const loginForm = document.getElementById("login-form");
+      loginForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        var username = document.getElementById("username").value;
+        var password = document.getElementById("password").value;
+        socket.emit("login", username,password)
+        // ... handle login logic here ...
+        closePopup("login-popup");
+      });
+
+      // Handle signup form submission
+      const signupForm = document.getElementById("signup-form");
+      signupForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        // ... handle signup logic here ...
+        closePopup("signup-popup");
+      });
+
+      // ... existing javascript code ...
+    </script>
+
+    <style>
+      .popup {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        z-index: 10;
+      }
+
+      .popup-content {
+        position: relative;
+      }
+
+      .close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 20px;
+        cursor: pointer;
+      }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,30 @@
+<html>
+  <head>
+    <div>
+      <button>Home</button>
+
+      <title>Yaszu's Playground</title>
+    </div>
+  </head>
+  <body>
+    <div>
+      <button id="blogbutton" onclick="startblog();">Blog</button>
+      <button>Tetrime</button>
+      <button>Chat</button>
+    </div>
+  </body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    
+    var blogbutton = document.getElementById("blogbutton");
+    var blogenabled = false;
+    function startblog() {
+      console.log("log");
+      socket.emit("userconnectblog");
+      blogenabled = true;
+      
+      blogbutton.style.display = "none";
+    }
+  </script>
+</html>
